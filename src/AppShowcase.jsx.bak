@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { toPng } from "html-to-image";
+import { encodeCardToUrl } from "./utils/urlEncoder";
 
 export default function AppShowcase() {
   const [cardData, setCardData] = useState({
@@ -36,7 +37,7 @@ export default function AppShowcase() {
             <div style={styles.brandAccent}></div>
           </div>
           <nav style={styles.nav}>
-            <a href="#" 
+            <a href="#"
                style={styles.navLink}
                onMouseEnter={e => {
                  e.target.style.color = '#007BFF';
@@ -47,7 +48,7 @@ export default function AppShowcase() {
                  e.target.style.borderBottom = 'none';
                }}
             >文档</a>
-            <a href="#" 
+            <a href="#"
                style={styles.navLink}
                onMouseEnter={e => {
                  e.target.style.color = '#007BFF';
@@ -219,36 +220,57 @@ export default function AppShowcase() {
               </div>
             </div>
 
-            {/* 下载按钮区域 */}
+            {/* 下载与分享按钮区域（已替换为水平按钮组） */}
             <div style={styles.actionArea}>
-              <button 
-                style={styles.downloadButton}
-                onClick={downloadCard}
-                onMouseDown={e => {
-                  e.currentTarget.style.transform = 'scale(0.97) translateY(2px)';
-                  e.currentTarget.style.background = '#0056b3';
-                  e.currentTarget.style.borderColor = '#0056b3';
-                }}
-                onMouseUp={e => {
-                  e.currentTarget.style.transform = 'scale(1) translateY(0)';
-                  e.currentTarget.style.background = '#007BFF';
-                  e.currentTarget.style.borderColor = '#007BFF';
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 6px 0 #0056b3';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = 'none';
-                  e.currentTarget.style.background = '#007BFF';
-                  e.currentTarget.style.borderColor = '#007BFF';
-                }}
-              >
-                <span style={styles.buttonText}>下载名片</span>
-                <div style={styles.buttonAccent}></div>
-              </button>
-              <div style={styles.buttonHint}>PNG格式 • 高清输出</div>
+              <div style={styles.buttonRow}>
+                {/* 下载按钮（保持原有 downloadCard 行为与交互） */}
+                <button
+                  style={styles.downloadButton}
+                  onClick={downloadCard}
+                  onMouseDown={(e) => {
+                    styles.buttonMouseDown(e);
+                  }}
+                  onMouseUp={(e) => {
+                    styles.buttonMouseUp(e);
+                  }}
+                  onMouseEnter={(e) => {
+                    styles.buttonMouseEnter(e);
+                  }}
+                  onMouseLeave={(e) => {
+                    styles.buttonMouseLeave(e);
+                  }}
+                >
+                  <span style={styles.buttonText}>下载名片</span>
+                  <div style={styles.buttonAccent}></div>
+                </button>
+
+                {/* 分享链接按钮（新） */}
+                <button
+                  style={styles.downloadButton}
+                  onClick={() => {
+                    const url = encodeCardToUrl(cardData);
+                    navigator.clipboard.writeText(url);
+                    alert("已复制分享链接：\n" + url);
+                  }}
+                  onMouseDown={(e) => {
+                    styles.buttonMouseDown(e);
+                  }}
+                  onMouseUp={(e) => {
+                    styles.buttonMouseUp(e);
+                  }}
+                  onMouseEnter={(e) => {
+                    styles.buttonMouseEnter(e);
+                  }}
+                  onMouseLeave={(e) => {
+                    styles.buttonMouseLeave(e);
+                  }}
+                >
+                  <span style={styles.buttonText}>分享链接</span>
+                  <div style={styles.buttonAccent}></div>
+                </button>
+              </div>
+
+              <div style={styles.buttonHint}>PNG格式 · 高清输出 · 支持URL分享</div>
             </div>
           </div>
         </div>
@@ -357,7 +379,7 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
-    marginBottom: '8px',
+  marginBottom: '8px',
   },
   inputLabel: {
     fontSize: '14px',
@@ -526,4 +548,38 @@ const styles = {
     color: '#666',
     fontStyle: 'italic',
   },
+
+  /* 新增：按钮行样式 */
+  buttonRow: {
+    display: 'flex',
+    justifyContent: 'center',
+    gap: '20px',
+    marginBottom: '12px',
+  },
+
+  /* 新增：交互事件函数（在 JSX 中直接引用） */
+  buttonMouseDown: (e) => {
+    e.currentTarget.style.transform = 'scale(0.97) translateY(2px)';
+    e.currentTarget.style.background = '#0056b3';
+    e.currentTarget.style.borderColor = '#0056b3';
+  },
+
+  buttonMouseUp: (e) => {
+    e.currentTarget.style.transform = 'scale(1) translateY(0)';
+    e.currentTarget.style.background = '#007BFF';
+    e.currentTarget.style.borderColor = '#007BFF';
+  },
+
+  buttonMouseEnter: (e) => {
+    e.currentTarget.style.transform = 'translateY(-2px)';
+    e.currentTarget.style.boxShadow = '0 6px 0 #0056b3';
+  },
+
+  buttonMouseLeave: (e) => {
+    e.currentTarget.style.transform = 'translateY(0)';
+    e.currentTarget.style.boxShadow = 'none';
+    e.currentTarget.style.background = '#007BFF';
+    e.currentTarget.style.borderColor = '#007BFF';
+  },
 };
+
